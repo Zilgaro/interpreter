@@ -1,0 +1,11 @@
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.exe
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.deps.json
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.runtimeconfig.json
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.runtimeconfig.dev.json
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.dll
+C:\Users\verne\Documents\Compilers\bin\Debug\netcoreapp3.1\Compilers.pdb
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.csprojAssemblyReference.cache
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.AssemblyInfoInputs.cache
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.AssemblyInfo.cs
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.dll
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.pdb
