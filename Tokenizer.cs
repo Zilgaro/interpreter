@@ -7,12 +7,23 @@ namespace Compilers {
         private String text;
         private int pos;
         private char currentChar;
-        private Stack parentheses; 
+        private Hashtable reservedKeywords;
         public Tokenizer(String text) {
+            this.reservedKeywords = new Hashtable();
+            reservedKeywords.Add("var", new Token(TokenValues.VAR, "var"));
+            reservedKeywords.Add("int", new Token(TokenValues.INT, "int"));
+            reservedKeywords.Add("bool", new Token(TokenValues.BOOL, "bool"));
+            reservedKeywords.Add("for", new Token(TokenValues.FOR, "for"));
+            reservedKeywords.Add("end", new Token(TokenValues.END, "end"));
+            reservedKeywords.Add("print", new Token(TokenValues.PRINT, "print"));
+            reservedKeywords.Add("string", new Token(TokenValues.STRING, "string"));
+            reservedKeywords.Add("in", new Token(TokenValues.IN, "in"));
+            reservedKeywords.Add("do", new Token(TokenValues.DO, "do"));
+            reservedKeywords.Add("read", new Token(TokenValues.READ, "read"));
+            reservedKeywords.Add("assert", new Token(TokenValues.ASSERT, "assert"));
             this.text = text;
             this.pos = 0;
             this.currentChar = text[pos];
-            this.parentheses = new Stack();
         }
 
         public bool forward() {
@@ -25,6 +36,14 @@ namespace Compilers {
             }
         }
 
+        public char lookAhead() {
+            if ((this.pos+1) > (text.Length - 1)) {
+                return '\0';
+            } else {
+                return this.text[this.pos+1];
+            }
+        }
+
         public void ignoreWhitespace() {
             while (this.currentChar == ' ') {
                 //check if reached EOF
@@ -32,6 +51,31 @@ namespace Compilers {
                     break;
                 }
             }
+        }
+
+        public void ignoreSingleLineComment() {
+            while (this.currentChar != '\n') {
+                if (!forward()) {
+                    break;
+                }
+            }
+        }
+
+        public void ignoreMultiLineComment() {
+            while (this.currentChar != '*') {
+                //check if reached EOF
+                if (!forward()) {
+                    break;
+                }
+            }
+
+            if (this.currentChar == '*') {
+                if (forward()) {
+                    if (this.currentChar != '/') {
+                        ignoreMultiLineComment();
+                    }
+                }
+            } 
         }
 
         public String getIntegerStringValue() {
@@ -46,28 +90,32 @@ namespace Compilers {
             return result;
         }
 
+        public Token id() {
+            string result = "";
+            while (char.IsLetterOrDigit(this.currentChar)) {
+                result += this.currentChar;
+                forward();
+            }
+            return (Token)this.reservedKeywords[result];
+        }
+
         public Token NextToken() {
             Boolean eof = true;
             while (eof) {
+                
                 if (this.currentChar == ' ') {
                     this.ignoreWhitespace();
                     continue;
                 }
 
                 if (this.currentChar == '(') {
-                    this.parentheses.Push(null);
                     eof = forward();
-                    continue;
+                    return new Token(TokenValues.LPAREN, this.currentChar.ToString());
                 }
 
                 if (this.currentChar == ')') {
-                    if (this.parentheses.Count != 0) {
-                        this.parentheses.Pop();
-                        eof = forward();
-                        continue;
-                    } else {
-                        throw new InterpreterException("Syntax error: orphan closing parentheses");
-                    }
+                    eof = forward();
+                    return new Token(TokenValues.RPAREN, this.currentChar.ToString());
                 }
 
                 if (Char.IsDigit(this.currentChar)) {
@@ -83,10 +131,21 @@ namespace Compilers {
                     eof = forward();
                     return new Token(TokenValues.MINUS, this.currentChar.ToString());
                 }
-
+                /*
+                    Ignoring comments done here for now
+                */
                 if (this.currentChar == '/') {
-                    eof = forward();
-                    return new Token(TokenValues.DIVISION, this.currentChar.ToString());
+                    if (lookAhead() != '/') {
+                        eof = forward();
+                        return new Token(TokenValues.DIVISION, this.currentChar.ToString());    
+                    } else if (lookAhead() != '*') {
+                        ignoreMultiLineComment();
+                        continue;
+                    } else {
+                        ignoreSingleLineComment();
+                        continue;
+                    }
+                    
                 }
 
                 if (this.currentChar == '*') {
@@ -94,11 +153,22 @@ namespace Compilers {
                     return new Token(TokenValues.MULTIPLY, this.currentChar.ToString());
                 }
 
+                if (char.IsLetter(this.currentChar)) {
+                    return this.id();
+                }
+
+                if (this.currentChar == ':' && this.lookAhead() == '=') {
+                    forward();
+                    forward();
+                    return new Token(TokenValues.ASSIGN, ":=");
+                }
+
+                if (this.currentChar == ';') {
+                    forward();
+                    return new Token(TokenValues.SEMI, ";");
+                }
 
                 throw new InterpreterException("Syntax Error");
-            }
-            if (this.parentheses.Count != 0) {
-                throw new InterpreterException("Syntax error: Opening parentheses without matching closing parentheses");
             }
             return new Token(TokenValues.EOF, null);
     }

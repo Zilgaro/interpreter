@@ -24,12 +24,23 @@ namespace Compilers
         }
 
         public string Factor() {
-            Token token = this.currentToken;
-            Eat(TokenValues.INTEGER);
-            return token.GetValue();
+            // INTEGER | LPAREN expr RPAREN
+            string result = null;
+            if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
+                Eat(TokenValues.LPAREN);
+                result = Expr().ToString();
+                Eat(TokenValues.RPAREN);
+                return result;
+            } else if (this.currentToken.GetTokenValueType() == TokenValues.INTEGER) {
+                Token token = this.currentToken;
+                Eat(TokenValues.INTEGER);
+                return token.GetValue();
+            }
+            return result;
         }
 
         public int Term() {
+            // factor ((MUL|DIV) factor)*
             int result = int.Parse(Factor());
 
             while (this.currentToken.GetTokenValueType() == TokenValues.DIVISION || this.currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
@@ -53,7 +64,7 @@ namespace Compilers
             /*
                 expr    : Term ((PLUS|MINUS) Term) *
                 Term    : Factor ((MUL|DIV) Factor) * 
-                Factor  : INTEGER
+                Factor  : INTEGER | LPAREN expr RPAREN
             */
             while(values.Contains(this.currentToken.GetTokenValueType())) {
                 TokenValues type = this.currentToken.GetTokenValueType();
