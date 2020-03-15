@@ -1,88 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
+namespace Compilers {
+    class Interpreter {
+        private Parser parser;
+        public Interpreter(Parser parser) {
+            this.parser = parser;
+        } 
 
-namespace Compilers
-{
-    class Interpreter
-    {
-        private Tokenizer tokenizer;
-        private Token currentToken;
-
-        public Interpreter(Tokenizer tokenizer) {
-            this.tokenizer = tokenizer;
-            currentToken = tokenizer.NextToken();
-        }
-
-        public void Eat(TokenValues type) {
-            if (this.currentToken.GetTokenValueType() == type) {
-                this.currentToken = tokenizer.NextToken();
+        public int visitNum(AST node) {
+            if (node.GetToken().GetTokenValueType() == TokenValues.INTEGER) {
+                return Int32.Parse(node.GetToken().GetValue());
             } else {
-                throw new InterpreterException($"Token type did not match, {type} expected, got {this.currentToken.GetTokenValueType()}");
+                throw(new InterpreterException("Invalid syntax"));
             }
         }
 
-        public string Factor() {
-            // INTEGER | LPAREN expr RPAREN
-            string result = null;
-            if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
-                Eat(TokenValues.LPAREN);
-                result = Expr().ToString();
-                Eat(TokenValues.RPAREN);
-                return result;
-            } else if (this.currentToken.GetTokenValueType() == TokenValues.INTEGER) {
-                Token token = this.currentToken;
-                Eat(TokenValues.INTEGER);
-                return token.GetValue();
+        public int visitBinOp(AST node) {
+            int left = this.visit(node.GetChildren()[0]);
+            int right = this.visit(node.GetChildren()[1]);   
+
+            switch (node.GetToken().GetTokenValueType()) {
+                case TokenValues.PLUS:
+                    return left + right;
+                case TokenValues.MINUS:
+                    return left - right;
+                case TokenValues.MULTIPLY:
+                    return left * right;
+                case TokenValues.DIVISION:
+                    return left / right;
+                default:
+                    throw(new InterpreterException("Invalid syntax"));
             }
-            return result;
         }
 
-        public int Term() {
-            // factor ((MUL|DIV) factor)*
-            int result = int.Parse(Factor());
-
-            while (this.currentToken.GetTokenValueType() == TokenValues.DIVISION || this.currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
-                if (currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
-                    Eat(TokenValues.MULTIPLY);
-                    result = result * int.Parse(Factor());
-                } else {
-                    Eat(TokenValues.DIVISION);
-                    result = result / int.Parse(Factor());
-                }
+        public int visit (AST node) {
+            TokenValues v = node.GetToken().GetTokenValueType();
+            if (v == TokenValues.INTEGER) {
+                return this.visitNum(node);
+            } else if (v == TokenValues.MULTIPLY || v == TokenValues.MINUS || v == TokenValues.PLUS || v ==  TokenValues.DIVISION) {
+                return this.visitBinOp(node);
+            } else {
+                throw new InterpreterException("syntax error");
             }
-            return result;
         }
 
-        public int Expr() {
-            int result = Term();
+        public int interpret() {
+            AST tree = this.parser.parse();
+            var result = this.visit(tree);
 
-            HashSet<TokenValues> values = new HashSet<TokenValues>();
-            values.Add(TokenValues.PLUS);
-            values.Add(TokenValues.MINUS);
-            /*
-                expr    : Term ((PLUS|MINUS) Term) *
-                Term    : Factor ((MUL|DIV) Factor) * 
-                Factor  : INTEGER | LPAREN expr RPAREN
-            */
-            while(values.Contains(this.currentToken.GetTokenValueType())) {
-                TokenValues type = this.currentToken.GetTokenValueType();
-                switch (type) {
-                    case TokenValues.MINUS:
-                        Eat(TokenValues.MINUS);
-                        result = result - Term();
-                        break;
-                    case TokenValues.PLUS:
-                        Eat(TokenValues.PLUS);
-                        result = result + Term();
-                        break;
-                    default:
-                        throw new InterpreterException("syntax error");
-                }
-            }
-
-            return result;
+            return result; 
         }
     }
 }

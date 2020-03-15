@@ -35,8 +35,9 @@ namespace Compilers
             string line;
             while ((line = Console.ReadLine()) != null) {
                 Tokenizer tokenizer = new Tokenizer(line);
-                Interpreter intrp = new Interpreter(tokenizer);
-                int result = intrp.Expr();
+                Parser parser = new Parser(tokenizer);
+                Interpreter interpreter = new Interpreter(parser);
+                int result = interpreter.interpret();
                 Console.WriteLine(result);
             }
         }
