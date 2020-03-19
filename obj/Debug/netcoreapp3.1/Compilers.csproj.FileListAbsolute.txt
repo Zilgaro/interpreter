@@ -9,3 +9,5 @@ C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.AssemblyInf
 C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.AssemblyInfo.cs
 C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.dll
 C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.pdb
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.csproj.CoreCompileInputs.cache
+C:\Users\verne\Documents\Compilers\obj\Debug\netcoreapp3.1\Compilers.genruntimeconfig.cache

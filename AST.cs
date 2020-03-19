@@ -15,5 +15,11 @@ namespace Compilers {
             return this.children;
         }
 
+        public AST GetLeft() {
+            return this.children[0];
+        }
+        public AST GetRight() {
+            return this.children[1];
+        }
     }
 }

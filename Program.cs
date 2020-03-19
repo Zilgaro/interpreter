@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+using System.IO;
+using System.Linq;
 
 namespace Compilers
 {
@@ -26,20 +27,34 @@ namespace Compilers
         ASSERT,
         ASSIGN,
         SEMI,
+        ID,
+        ROOT,
     }
 
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
+            StreamReader file;
+            try
+            {
+                file = new StreamReader("ExampleProgram.txt");
+            } catch (Exception e) {
+                Console.WriteLine(e);
+                return 1;
+            }
             string line;
-            while ((line = Console.ReadLine()) != null) {
+            while ((line = file.ReadLine()) != null) {
                 Tokenizer tokenizer = new Tokenizer(line);
                 Parser parser = new Parser(tokenizer);
                 Interpreter interpreter = new Interpreter(parser);
                 int result = interpreter.interpret();
-                Console.WriteLine(result);
+                //String result = interpreter.globalST.ToString();
+                Console.WriteLine("result: " + result + "Symbol table count " + interpreter.globalST.Keys.Count);
+                Console.WriteLine(line);
             }
+            return 0;
+
         }
     }
 }

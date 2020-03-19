@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Compilers {
@@ -7,20 +8,20 @@ namespace Compilers {
         private String text;
         private int pos;
         private char currentChar;
-        private Hashtable reservedKeywords;
+        private Dictionary<String, Token> reservedKeywords;
         public Tokenizer(String text) {
-            this.reservedKeywords = new Hashtable();
-            reservedKeywords.Add("var", new Token(TokenValues.VAR, "var"));
-            reservedKeywords.Add("int", new Token(TokenValues.INT, "int"));
-            reservedKeywords.Add("bool", new Token(TokenValues.BOOL, "bool"));
-            reservedKeywords.Add("for", new Token(TokenValues.FOR, "for"));
-            reservedKeywords.Add("end", new Token(TokenValues.END, "end"));
-            reservedKeywords.Add("print", new Token(TokenValues.PRINT, "print"));
-            reservedKeywords.Add("string", new Token(TokenValues.STRING, "string"));
-            reservedKeywords.Add("in", new Token(TokenValues.IN, "in"));
-            reservedKeywords.Add("do", new Token(TokenValues.DO, "do"));
-            reservedKeywords.Add("read", new Token(TokenValues.READ, "read"));
-            reservedKeywords.Add("assert", new Token(TokenValues.ASSERT, "assert"));
+            this.reservedKeywords = new Dictionary<String, Token>();
+            reservedKeywords.Add("var", new Token(TokenValues.ID, "var"));
+            reservedKeywords.Add("int", new Token(TokenValues.ID, "int"));
+            reservedKeywords.Add("bool", new Token(TokenValues.ID, "bool"));
+            reservedKeywords.Add("for", new Token(TokenValues.ID, "for"));
+            reservedKeywords.Add("end", new Token(TokenValues.ID, "end"));
+            reservedKeywords.Add("print", new Token(TokenValues.ID, "print"));
+            reservedKeywords.Add("string", new Token(TokenValues.ID, "string"));
+            reservedKeywords.Add("in", new Token(TokenValues.ID, "in"));
+            reservedKeywords.Add("do", new Token(TokenValues.ID, "do"));
+            reservedKeywords.Add("read", new Token(TokenValues.ID, "read"));
+            reservedKeywords.Add("assert", new Token(TokenValues.ID, "assert"));
             this.text = text;
             this.pos = 0;
             this.currentChar = text[pos];
@@ -96,12 +97,21 @@ namespace Compilers {
                 result += this.currentChar;
                 forward();
             }
-            return (Token)this.reservedKeywords[result];
+            if (this.reservedKeywords.ContainsKey(result)) {
+                return this.reservedKeywords[result];
+            } else {
+                this.reservedKeywords.Add(result, new Token(TokenValues.ID, result));
+                return this.reservedKeywords[result];
+            }
         }
 
         public Token NextToken() {
             Boolean eof = true;
             while (eof) {
+
+                if (char.IsLetter(this.currentChar)) {
+                    return this.id();
+                }
                 
                 if (this.currentChar == ' ') {
                     this.ignoreWhitespace();
@@ -151,10 +161,6 @@ namespace Compilers {
                 if (this.currentChar == '*') {
                     eof = forward();
                     return new Token(TokenValues.MULTIPLY, this.currentChar.ToString());
-                }
-
-                if (char.IsLetter(this.currentChar)) {
-                    return this.id();
                 }
 
                 if (this.currentChar == ':' && this.lookAhead() == '=') {

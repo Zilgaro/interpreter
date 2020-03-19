@@ -13,6 +13,9 @@ namespace Compilers
         public Parser(Tokenizer tokenizer) {
             this.tokenizer = tokenizer;
             currentToken = tokenizer.NextToken();
+            if (this.currentToken == null) {
+                throw new InterpreterException("first token null");
+            }
         }
 
         public void Eat(TokenValues type) {
@@ -24,7 +27,11 @@ namespace Compilers
         }
 
         public AST Factor() {
-            // INTEGER | LPAREN expr RPAREN
+            /* Factor: INTEGER 
+                     | LPAREN expr RPAREN
+                     | Variable
+            *           
+            */
             AST result = null;
             if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
                 Eat(TokenValues.LPAREN);
@@ -35,8 +42,9 @@ namespace Compilers
                 Token token = this.currentToken;
                 Eat(TokenValues.INTEGER);
                 return new AST(token, new AST[2]);
+            } else {
+                return Variable();
             }
-            return result;
         }
 
         public AST Term() {
@@ -91,8 +99,84 @@ namespace Compilers
             }
             return result;
         }
+
+        public AST Program() {
+            // Program : Statements
+            AST[] nodes = Statements();
+            AST[] children = {};
+            AST root = new AST(new Token(TokenValues.ROOT, null), children);
+
+            for (int i = 0; i < nodes.Length; i++) {
+                root.GetChildren().Append(nodes[i]);
+            }
+            return root;
+        }
+
+        public AST[] Statements() {
+            /* Statements : Statement SEMI
+            *             | Statement SEMI Statements
+            */
+            AST node = Statement();
+
+            AST[] results = {node};
+            
+            while (this.currentToken.GetTokenValueType() == TokenValues.SEMI) { 
+                Eat(TokenValues.SEMI);
+                results.Append(Statement());
+            }
+            if (this.currentToken.GetTokenValueType() == TokenValues.ID) {
+                throw new InterpreterException("Syntax error");
+            }
+            return results; 
+        }
+
+        public AST Statement() {
+            /* For now only assignment statements and empties
+            Statement : AssignmentStatement
+                      //| NormalStatement
+                      | Empty
+            */
+            AST result = null;
+            try {
+                if (this.currentToken.GetTokenValueType() == TokenValues.ID) {
+                    result = AssignmentStatement();
+                } else {
+                    result = Empty();
+                }
+            } catch (Exception e) {
+                result = Empty();
+            }
+            return result;
+        }
+
+        public AST AssignmentStatement() {
+            /*
+            * AssignmentStatement : Variable ASSIGN Expr 
+            */
+            AST left = Variable();
+            Eat(TokenValues.ASSIGN);
+            AST right = Expr();
+            AST[] children = {left, right};
+            return new AST(this.currentToken, children);
+        }
+
+        public AST Variable() {
+            /*
+            * Variable : ID 
+            */
+            Eat(TokenValues.ID);
+            return new AST(currentToken, null);
+        }
+
+        public AST Empty() {
+            return new AST(null, null);
+        }
         public AST parse() {
-            return this.Expr();
+            AST node = Program();
+            if (this.currentToken.GetTokenValueType() != TokenValues.EOF) {
+                throw new InterpreterException("EOF expected");
+            }
+            return node;
         }
     }
 }
