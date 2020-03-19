@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Compilers
 {
-    enum TokenValues {
+    public enum TokenValues {
         INTEGER,
         PLUS,
         MINUS,
@@ -53,6 +53,7 @@ namespace Compilers
                 Console.WriteLine("result: " + result + "Symbol table count " + interpreter.globalST.Keys.Count);
                 Console.WriteLine(line);
             }
+            file.Close();
             return 0;
 
         }

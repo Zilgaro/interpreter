@@ -1,6 +1,6 @@
 namespace Compilers {
-    class AST {
-        private Token token;
+    public interface VisitableNode {
+        /*private Token token;
         private AST[] children;
         public AST(Token token, AST[] children) {
             this.token = token;
@@ -21,5 +21,7 @@ namespace Compilers {
         public AST GetRight() {
             return this.children[1];
         }
+        */
+        void accept(Visitor v);
     }
 }

@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 
 namespace Compilers {
-    class Interpreter {
+    class Interpreter : Visitor {
         public Hashtable globalST; // Global scope symbol table
         private Parser parser;
         public Interpreter(Parser parser) {
             this.parser = parser;
             this.globalST = new Hashtable();
         } 
-
+        /*
         public int visitNum(AST node) {
             if (node.GetToken().GetTokenValueType() == TokenValues.INTEGER) {
                 return Int32.Parse(node.GetToken().GetValue());
@@ -76,10 +76,45 @@ namespace Compilers {
                 return Int32.Parse(value.GetToken().GetValue());
             }
         }
+        */
+
+        public void visit(Root root) {
+            root.getChild(0).accept(this);
+        }
+
+        public void visit(Assign assign) {
+            
+        }
+
+        public int visit(Num num) {
+            return Int32.Parse(num.getValue());
+        }
+
+        public void visit(Var var) {
+
+        }
+
+        public int visit(BinOp binOp) {
+            int left = this.visit(binOp.getLeft());
+            int right = this.visit(binOp.getRight());   
+
+            switch (binOp.getOp().GetTokenValueType()) {
+                case TokenValues.PLUS:
+                    return left + right;
+                case TokenValues.MINUS:
+                    return left - right;
+                case TokenValues.MULTIPLY:
+                    return left * right;
+                case TokenValues.DIVISION:
+                    return left / right;
+                default:
+                    throw(new InterpreterException("Invalid syntax"));
+            }
+        }
 
         public int interpret() {
-            AST tree = this.parser.parse();
-            var result = this.visit(tree);
+            Root root = this.parser.parse();
+            var result = this.visit(root);
 
             return result; 
         }

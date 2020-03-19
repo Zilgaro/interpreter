@@ -2,7 +2,7 @@ using System;
 
 namespace Compilers
 {
-    class Token {
+    public class Token {
         private TokenValues type;
         //char cannot be null in C# so let's use string
         private string value;

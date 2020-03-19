@@ -149,30 +149,30 @@ namespace Compilers
             return result;
         }
 
-        public AST AssignmentStatement() {
+        public Assign AssignmentStatement() {
             /*
             * AssignmentStatement : Variable ASSIGN Expr 
             */
-            AST left = Variable();
+            Var left = Variable();
             Eat(TokenValues.ASSIGN);
             AST right = Expr();
             AST[] children = {left, right};
             return new AST(this.currentToken, children);
         }
 
-        public AST Variable() {
+        public Var Variable() {
             /*
             * Variable : ID 
             */
             Eat(TokenValues.ID);
-            return new AST(currentToken, null);
+            return new Var(currentToken, null);
         }
 
         public AST Empty() {
             return new AST(null, null);
         }
-        public AST parse() {
-            AST node = Program();
+        public Root parse() {
+            Root node = Program();
             if (this.currentToken.GetTokenValueType() != TokenValues.EOF) {
                 throw new InterpreterException("EOF expected");
             }
