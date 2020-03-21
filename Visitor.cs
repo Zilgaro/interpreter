@@ -1,10 +1,10 @@
 namespace Compilers {
     public interface Visitor {
         void visit (Root root);
-        void visit (Num num);
+        int visit (Num num);
         void visit (Assign assign);  
-        void visit (BinOp binOp);
-        void visit (Var var);
+        int visit (BinOp binOp);
+        int visit (Var var);
 
 
     }

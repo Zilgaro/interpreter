@@ -26,50 +26,46 @@ namespace Compilers
             }
         }
 
-        public AST Factor() {
+        public dynamic Factor() {
             /* Factor: INTEGER 
                      | LPAREN expr RPAREN
                      | Variable
             *           
             */
-            AST result = null;
             if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
                 Eat(TokenValues.LPAREN);
-                result = Expr();
+                BinOp result = Expr();
                 Eat(TokenValues.RPAREN);
                 return result;
             } else if (this.currentToken.GetTokenValueType() == TokenValues.INTEGER) {
                 Token token = this.currentToken;
                 Eat(TokenValues.INTEGER);
-                return new AST(token, new AST[2]);
+                return new Num(token);
             } else {
                 return Variable();
             }
         }
 
-        public AST Term() {
+        public dynamic Term() {
             // factor ((MUL|DIV) factor)*
             //int result = int.Parse(Factor());
-            AST result = Factor();
-
+            var result = Factor();
             while (this.currentToken.GetTokenValueType() == TokenValues.DIVISION || this.currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
+                Token token = this.currentToken;
                 if (currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
                     Eat(TokenValues.MULTIPLY);
-                    AST[] children = {result, this.Factor()};
-                    result = new AST(new Token(TokenValues.MULTIPLY, "*"), children);
                 } else {
                     Eat(TokenValues.DIVISION);
-                    AST[] children = {result, this.Factor()};
-                    result = new AST(new Token(TokenValues.DIVISION, "/"), children);
                 }
+                result = new BinOp(result, token, this.Factor());
             }
 
             
             return result;
         }
 
-        public AST Expr() {
-            AST result = Term();
+        public dynamic Expr() {
+            VisitableNode result = Term();
 
             HashSet<TokenValues> values = new HashSet<TokenValues>();
             values.Add(TokenValues.PLUS);
@@ -85,40 +81,35 @@ namespace Compilers
                 switch (type) {
                     case TokenValues.MINUS:
                         Eat(TokenValues.MINUS);
-                        AST[] children = {result, this.Term()};
-                        result = new AST(new Token(TokenValues.MINUS, "-"), children);
                         break;
                     case TokenValues.PLUS:
                         Eat(TokenValues.PLUS);
-                        AST[] children1 = {result, this.Term()};
-                        result = new AST(new Token(TokenValues.PLUS, "+"), children1);
                         break;
                     default:
                         throw new InterpreterException("syntax error");
                 }
+                result = new BinOp(result, curr, this.Term());
             }
             return result;
         }
 
-        public AST Program() {
+        public Root Program() {
             // Program : Statements
-            AST[] nodes = Statements();
-            AST[] children = {};
-            AST root = new AST(new Token(TokenValues.ROOT, null), children);
-
+            VisitableNode[] nodes = Statements();
+            Root root = new Root();
             for (int i = 0; i < nodes.Length; i++) {
-                root.GetChildren().Append(nodes[i]);
+                root.addChild(nodes[i]);
             }
             return root;
         }
 
-        public AST[] Statements() {
+        public VisitableNode[] Statements() {
             /* Statements : Statement SEMI
             *             | Statement SEMI Statements
             */
-            AST node = Statement();
+            VisitableNode node = Statement();
 
-            AST[] results = {node};
+            VisitableNode[] results = {node};
             
             while (this.currentToken.GetTokenValueType() == TokenValues.SEMI) { 
                 Eat(TokenValues.SEMI);
@@ -130,22 +121,20 @@ namespace Compilers
             return results; 
         }
 
-        public AST Statement() {
+        public VisitableNode Statement() {
             /* For now only assignment statements and empties
             Statement : AssignmentStatement
                       //| NormalStatement
                       | Empty
             */
-            AST result = null;
-            try {
+            VisitableNode result = null;
+
                 if (this.currentToken.GetTokenValueType() == TokenValues.ID) {
                     result = AssignmentStatement();
                 } else {
                     result = Empty();
-                }
-            } catch (Exception e) {
-                result = Empty();
-            }
+                } 
+
             return result;
         }
 
@@ -154,23 +143,25 @@ namespace Compilers
             * AssignmentStatement : Variable ASSIGN Expr 
             */
             Var left = Variable();
+            Token token = currentToken;
             Eat(TokenValues.ASSIGN);
-            AST right = Expr();
-            AST[] children = {left, right};
-            return new AST(this.currentToken, children);
+            var right = Expr();
+            return new Assign(left, token, right);
         }
 
         public Var Variable() {
             /*
             * Variable : ID 
             */
+            Var res = new Var(currentToken);
             Eat(TokenValues.ID);
-            return new Var(currentToken, null);
+            return res;
         }
 
-        public AST Empty() {
-            return new AST(null, null);
+        public NoOp Empty() {
+            return new NoOp();
         }
+
         public Root parse() {
             Root node = Program();
             if (this.currentToken.GetTokenValueType() != TokenValues.EOF) {

@@ -30,6 +30,7 @@ namespace Compilers {
         public bool forward() {
             this.pos++;
             if (this.pos > (text.Length - 1)) {
+                this.currentChar = '\0';
                 return false;
             } else {
                 this.currentChar = this.text[this.pos];
@@ -109,6 +110,10 @@ namespace Compilers {
             Boolean eof = true;
             while (eof) {
 
+                if (this.currentChar == '\0') {
+                    break;
+                }
+
                 if (char.IsLetter(this.currentChar)) {
                     return this.id();
                 }
@@ -164,16 +169,15 @@ namespace Compilers {
                 }
 
                 if (this.currentChar == ':' && this.lookAhead() == '=') {
-                    forward();
-                    forward();
+                    eof =forward();
+                    eof =forward();
                     return new Token(TokenValues.ASSIGN, ":=");
                 }
 
                 if (this.currentChar == ';') {
-                    forward();
+                    eof = forward();
                     return new Token(TokenValues.SEMI, ";");
                 }
-
                 throw new InterpreterException("Syntax Error");
             }
             return new Token(TokenValues.EOF, null);

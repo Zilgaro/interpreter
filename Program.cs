@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
 
@@ -43,15 +44,19 @@ namespace Compilers
                 Console.WriteLine(e);
                 return 1;
             }
+
+            Hashtable globalST = new Hashtable();
             string line;
             while ((line = file.ReadLine()) != null) {
                 Tokenizer tokenizer = new Tokenizer(line);
                 Parser parser = new Parser(tokenizer);
-                Interpreter interpreter = new Interpreter(parser);
-                int result = interpreter.interpret();
+                Interpreter interpreter = new Interpreter(parser, globalST);
+                interpreter.interpret();
                 //String result = interpreter.globalST.ToString();
-                Console.WriteLine("result: " + result + "Symbol table count " + interpreter.globalST.Keys.Count);
-                Console.WriteLine(line);
+            }
+            Console.WriteLine("Global symbol table key-value pairs:");
+            foreach (var key in globalST.Keys) {
+                Console.WriteLine("Key: " + key + ", Value: " + globalST[key]);
             }
             file.Close();
             return 0;

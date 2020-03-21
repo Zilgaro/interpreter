@@ -1,5 +1,5 @@
 namespace Compilers {
-    public interface VisitableNode {
+    public abstract class VisitableNode {
         /*private Token token;
         private AST[] children;
         public AST(Token token, AST[] children) {
@@ -22,6 +22,6 @@ namespace Compilers {
             return this.children[1];
         }
         */
-        void accept(Visitor v);
+        public abstract void accept(Visitor v);
     }
 }

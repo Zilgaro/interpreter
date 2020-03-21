@@ -2,7 +2,14 @@ namespace Compilers {
     public class BinOp : VisitableNode {
         private VisitableNode left, right;
         private Token op;
-        public void accept(Visitor v) {
+
+        public BinOp(VisitableNode left, Token op, VisitableNode right) {
+            this.left = left;
+            this.op = op;
+            this.right = right;
+        }
+
+        public override void accept(Visitor v) {
             v.visit(this);
         }
 
@@ -11,6 +18,5 @@ namespace Compilers {
         public VisitableNode getLeft() {return this.left;}
 
         public VisitableNode getRight() {return this.right;}
-
     }
 }

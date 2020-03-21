@@ -8,9 +8,7 @@ namespace Compilers {
             this.value = t.GetValue();
         }
 
-        public void accept(Visitor v) {
-            v.visit(this);
-        }
+        public override void accept(Visitor v) => v.visit(this);
 
         public string getValue() {return this.value;}
 
