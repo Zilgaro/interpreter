@@ -3,8 +3,8 @@ namespace Compilers {
         void visit (Root root);
         int visit (Num num);
         void visit (Assign assign);  
-        int visit (BinOp binOp);
-        int visit (Var var);
+        dynamic visit (BinOp binOp);
+        dynamic visit (Var var);
 
         void visit(VarDecl varDecl);
 

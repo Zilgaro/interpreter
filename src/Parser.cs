@@ -78,7 +78,7 @@ namespace Compilers
             /*
                 expr    : Term ((PLUS|MINUS) Term) *
                 Term    : Factor ((MUL|DIV) Factor) * 
-                Factor  : INTEGER | LPAREN expr RPAREN
+                Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING
             */
             while(values.Contains(this.currentToken.GetTokenValueType())) {
                 TokenValues type = this.currentToken.GetTokenValueType();
@@ -204,7 +204,7 @@ namespace Compilers
         public TypeNode TypeSpec() {
             /*
             * TypeSpec: INT 
-                        | STRING <- not yet
+                        | STRING
                         | BOOL <- not yet
 
             */
@@ -212,6 +212,8 @@ namespace Compilers
 
             if (this.currentToken.GetTokenValueType() == TokenValues.INT) {
                 Eat(TokenValues.INT);
+            } else if (this.currentToken.GetTokenValueType() == TokenValues.STRING) {
+                Eat(TokenValues.STRING);
             }
             return new TypeNode(token);
         }

@@ -3,3 +3,7 @@ a := number;
 b := 10 * a + 10 * number / 4;
 c := a - b;
 x := 11;
+var X : int := 4 + (6 * 2);
+print X;
+var nTimes : int := 0;
+print "How many times?"; 

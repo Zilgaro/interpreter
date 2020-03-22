@@ -91,8 +91,10 @@ namespace Compilers {
                 this.globalST[name] = this.visit((BinOp) assign.GetRight());
             } else if (t == typeof(Var)) {
                 this.globalST[name] = this.visit((Var) assign.GetRight());
+            } else if (t == typeof(Str)){
+                this.globalST[name] = this.visit((Str) assign.GetRight());
             } else {
-                throw new InterpreterException("Unsupported assign visit");
+                throw new InterpreterException("Unsupported type assignment");
             }
         }
 
@@ -104,26 +106,26 @@ namespace Compilers {
             return str.getValue();
         }
 
-        public int visit(Var var) {
+        public dynamic visit(Var var) {
             String name = var.GetValue();
         
             if (globalST.ContainsKey(name)) {
-                return (int) globalST[name];
+                return globalST[name];
             } else {
                 throw new InterpreterException("Undeclared variable");
             }
         }
 
-        public int visit(BinOp binOp) {
-            int left;
-            int right;
+        public dynamic visit(BinOp binOp) {
+            int left = 0;
+            int right = 0;
             Type leftType = binOp.getLeft().GetType();
             Type rightType = binOp.getRight().GetType();
             if (leftType == typeof(Num)) {
                 left = this.visit((Num)binOp.getLeft());
             } else if (leftType == typeof(BinOp)) {
                 left = this.visit((BinOp)binOp.getLeft());
-            } else {
+            } else if (leftType == typeof(Var)) {
                 left = this.visit((Var)binOp.getLeft());
             }
             
@@ -131,8 +133,18 @@ namespace Compilers {
                 right = this.visit((Num)binOp.getRight());
             } else if (rightType == typeof(BinOp)) {
                 right = this.visit((BinOp)binOp.getRight());
-            } else {
+            } else if (rightType == typeof(Var)) {
                 right = this.visit((Var)binOp.getRight());
+            }
+
+            if (leftType == typeof(Str)) {
+                if (rightType == typeof(Str)) {
+                    if (binOp.getOp().GetTokenValueType() == TokenValues.PLUS) {
+                        return this.visit((Str)binOp.getLeft()) + this.visit((Str)binOp.getRight());
+                    }
+                } else {
+                    throw new InterpreterException(String.Format("Incompatible types for operation {0}: {1} {2}", binOp.getOp().GetTokenValueType(), leftType, rightType));
+                }
             }
                
 
