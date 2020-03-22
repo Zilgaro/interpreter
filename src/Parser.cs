@@ -124,18 +124,33 @@ namespace Compilers
         public VisitableNode Statement() {
             /* For now only assignment statements and empties
             Statement : AssignmentStatement
-                      //| NormalStatement
+                      | VariableDeclaration
+                      | Print
                       | Empty
             */
             VisitableNode result = null;
 
                 if (this.currentToken.GetTokenValueType() == TokenValues.ID) {
                     result = AssignmentStatement();
+                } else if (this.currentToken.GetTokenValueType() == TokenValues.VAR) {
+                    Eat(TokenValues.VAR);
+                    result = VariableDeclaration();
+                } else if (this.currentToken.GetTokenValueType() == TokenValues.PRINT) {
+                    Eat(TokenValues.PRINT);
+                    result = Print();
                 } else {
                     result = Empty();
                 } 
 
             return result;
+        }
+
+        public Print Print() {
+            /*
+            * Print: PRINT Expr
+            */
+            VisitableNode n = Expr();
+            return new Print(n);
         }
 
         public Assign AssignmentStatement() {
@@ -149,6 +164,13 @@ namespace Compilers
             return new Assign(left, token, right);
         }
 
+        public Assign DecAssign(Var left) {
+            Token token = currentToken;
+            Eat(TokenValues.ASSIGN);
+            var right = Expr();
+            return new Assign(left, token, right);
+        }
+
         public Var Variable() {
             /*
             * Variable : ID 
@@ -156,6 +178,37 @@ namespace Compilers
             Var res = new Var(currentToken);
             Eat(TokenValues.ID);
             return res;
+        }
+
+        public VarDecl VariableDeclaration() {
+            /*
+            * VariableDeclaration : VAR COLON TypeSpec (ASSIGN Expr)?
+            */
+            Var n = Variable();
+            Eat(TokenValues.COLON);
+
+            TypeNode t = TypeSpec();
+
+            if (this.currentToken.GetTokenValueType() == TokenValues.ASSIGN) {
+                Assign a = DecAssign(n);
+                return new VarDecl(n, t ,a);
+            }
+            return new VarDecl(n, t);
+        }
+
+        public TypeNode TypeSpec() {
+            /*
+            * TypeSpec: INT 
+                        | STRING <- not yet
+                        | BOOL <- not yet
+
+            */
+            Token token = this.currentToken;
+
+            if (this.currentToken.GetTokenValueType() == TokenValues.INT) {
+                Eat(TokenValues.INT);
+            }
+            return new TypeNode(token);
         }
 
         public NoOp Empty() {

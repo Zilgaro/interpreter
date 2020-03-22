@@ -147,6 +147,26 @@ namespace Compilers {
         }
 
         public void visit(NoOp noOp) {}
+        public void visit(TypeNode typeNode) {}
+        public void visit(VarDecl varDecl) {
+            if (varDecl.GetAssign() != null) {
+                visit(varDecl.GetAssign());
+            }
+        }
+
+        /*
+        * This is again horribly inefficient but my C# skills are lacking to do this nicer
+        */
+        public void visit(Print print) {
+            Type printType = print.GetNode().GetType();
+            if (printType == typeof(BinOp)) {
+                Console.WriteLine(visit((BinOp)print.GetNode()));
+            } else if (printType == typeof(Num)) {
+                Console.WriteLine(visit((Num)print.GetNode()));
+            } else if (printType == typeof(Var)) {
+                Console.WriteLine(visit((Var)print.GetNode()));
+            }
+        }
 
         public void interpret() {
             Root root = this.parser.parse();

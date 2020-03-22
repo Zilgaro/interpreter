@@ -30,6 +30,8 @@ namespace Compilers
         SEMI,
         ID,
         ROOT,
+        COLON, 
+        
     }
 
     class Program
@@ -39,7 +41,7 @@ namespace Compilers
             StreamReader file;
             try
             {
-                file = new StreamReader("ExampleProgram.txt");
+                file = new StreamReader("ExampleProgram2.txt");
             } catch (Exception e) {
                 Console.WriteLine(e);
                 return 1;

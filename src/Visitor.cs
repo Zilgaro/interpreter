@@ -6,6 +6,10 @@ namespace Compilers {
         int visit (BinOp binOp);
         int visit (Var var);
 
+        void visit(VarDecl varDecl);
 
+        void visit (TypeNode typeNode);
+
+        void visit (Print print);
     }
 }
