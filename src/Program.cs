@@ -52,13 +52,13 @@ namespace Compilers
             }
 
             Hashtable globalST = new Hashtable();
-            string line;
-            while ((line = file.ReadLine()) != null) {
-                Tokenizer tokenizer = new Tokenizer(line);
-                Parser parser = new Parser(tokenizer);
-                Interpreter interpreter = new Interpreter(parser, globalST);
-                interpreter.interpret();
-            }
+            string text = file.ReadToEnd();
+            //while ((line = file.ReadLine()) != null) {
+            Tokenizer tokenizer = new Tokenizer(text);
+            Parser parser = new Parser(tokenizer);
+            Interpreter interpreter = new Interpreter(parser, globalST);
+            interpreter.interpret();
+            //}
             // Program state at the end
             Console.WriteLine("Global symbol table key-value pairs:");
             foreach (var key in globalST.Keys) {

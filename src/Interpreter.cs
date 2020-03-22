@@ -79,7 +79,9 @@ namespace Compilers {
         */
 
         public void visit(Root root) {
-            root.getChild(0).accept(this);
+            foreach(VisitableNode n in root.getChildren()) {
+                n.accept(this);
+            }
         }
 
         public void visit(Assign assign) {
@@ -217,11 +219,11 @@ namespace Compilers {
             globalST[readNode.GetNode().GetValue()] = read;
         }
 
+        public void visit(ForNode forNode) {}
+
         public void interpret() {
             Root root = this.parser.parse();
             this.visit(root);
-
-            //return result; 
         }
     }
 }

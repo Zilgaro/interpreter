@@ -219,6 +219,12 @@ namespace Compilers {
                     eof = forward();
                     return new Token(TokenValues.SEMI, ";");
                 }
+
+                if (this.currentChar == '\r' && lookAhead() == '\n') {
+                    eof = forward();
+                    eof = forward();
+                    continue;
+                }
                 throw new InterpreterException("Syntax Error");
             }
             return new Token(TokenValues.EOF, null);

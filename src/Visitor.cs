@@ -19,5 +19,7 @@ namespace Compilers {
         void visit (Assert assert);
 
         void visit(ReadNode readNode);
+
+        void visit(ForNode forNode);
     }
 }

@@ -117,25 +117,26 @@ namespace Compilers
 
         public Root Program() {
             // Program : Statements
-            VisitableNode[] nodes = Statements();
+            List<VisitableNode> nodes = Statements();
             Root root = new Root();
-            for (int i = 0; i < nodes.Length; i++) {
+            for (int i = 0; i < nodes.Count; i++) {
                 root.addChild(nodes[i]);
             }
             return root;
         }
 
-        public VisitableNode[] Statements() {
+        public List<VisitableNode> Statements() {
             /* Statements : Statement SEMI
             *             | Statement SEMI Statements
             */
             VisitableNode node = Statement();
 
-            VisitableNode[] results = {node};
-            
+            List<VisitableNode> results = new List<VisitableNode>();
+            results.Add(node);
+
             while (this.currentToken.GetTokenValueType() == TokenValues.SEMI) { 
                 Eat(TokenValues.SEMI);
-                results.Append(Statement());
+                results.Add(Statement());
             }
             if (this.currentToken.GetTokenValueType() == TokenValues.ID) {
                 throw new InterpreterException("Syntax error");
@@ -151,6 +152,7 @@ namespace Compilers
                       | Empty
                       | AssertionStatement
                       | ReadStatement
+                      | ForStatement
             */
             VisitableNode result = null;
 
@@ -193,14 +195,29 @@ namespace Compilers
 
         }
 
-      public ReadNode ReadStatement() {
+        public ForNode ForStatement() {
+            /*
+            * ForStatement: FOR Var IN Expr DDOT Expr DO Statements END FOR
+            */
+            Eat(TokenValues.FOR);
+            Var v = Variable();
+            Eat(TokenValues.IN);
+            VisitableNode n = Expr();
+            Eat(TokenValues.DO);
+            List<VisitableNode> s = Statements();
+            Eat(TokenValues.END);
+            Eat(TokenValues.FOR);
+            return new ForNode(v,n,s);
+        }
+
+        public ReadNode ReadStatement() {
            /*
            * ReadStatement: READ Variable
            */
            Eat(TokenValues.READ);
            Var v = Variable();
            return new ReadNode(v);
-       }
+        }
 
         public Assign AssignmentStatement() {
             /*
