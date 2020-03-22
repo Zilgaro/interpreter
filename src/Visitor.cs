@@ -11,5 +11,7 @@ namespace Compilers {
         void visit (TypeNode typeNode);
 
         void visit (Print print);
+
+        string visit(Str str);
     }
 }

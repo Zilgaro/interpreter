@@ -30,6 +30,7 @@ namespace Compilers
             /* Factor: INTEGER 
                      | LPAREN expr RPAREN
                      | Variable
+                     | STRING
             *           
             */
             if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
@@ -41,6 +42,10 @@ namespace Compilers
                 Token token = this.currentToken;
                 Eat(TokenValues.INTEGER);
                 return new Num(token);
+            } else if (this.currentToken.GetTokenValueType() == TokenValues.STRING) {
+                Token token = this.currentToken;
+                Eat(TokenValues.STRING);
+                return new Str(token);
             } else {
                 return Variable();
             }

@@ -1,2 +1,4 @@
 var X : int := 4 + (6 * 2);
 print X;
+var nTimes : int := 0;
+print "How many times?"; 

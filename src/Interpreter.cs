@@ -100,6 +100,10 @@ namespace Compilers {
             return Int32.Parse(num.getValue());
         }
 
+        public string visit(Str str) {
+            return str.getValue();
+        }
+
         public int visit(Var var) {
             String name = var.GetValue();
         
@@ -165,6 +169,8 @@ namespace Compilers {
                 Console.WriteLine(visit((Num)print.GetNode()));
             } else if (printType == typeof(Var)) {
                 Console.WriteLine(visit((Var)print.GetNode()));
+            } else if (printType == typeof(Str)) {
+                Console.WriteLine(visit((Str)print.GetNode()));
             }
         }
 

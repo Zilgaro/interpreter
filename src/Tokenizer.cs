@@ -92,11 +92,28 @@ namespace Compilers {
             return result;
         }
 
+        public String getStringValue() {
+            String result = "";
+            char lastChar = ' '; // Keep tabs on escaped character values to not break string prematurely
+            while(currentChar != '"' || lastChar == '\\') {
+                result += this.currentChar;
+                lastChar = this.currentChar;
+                if (!forward()) {
+                    break;
+                }
+                
+            }
+            forward();
+            return result;
+        }
+
         public Token id() {
             string result = "";
             while (char.IsLetterOrDigit(this.currentChar)) {
                 result += this.currentChar;
-                forward();
+                if(!forward()) {
+                    break;
+                }
             }
             if (this.reservedKeywords.ContainsKey(result)) {
                 return this.reservedKeywords[result];
@@ -109,6 +126,11 @@ namespace Compilers {
         public Token NextToken() {
             Boolean eof = true;
             while (eof) {
+
+                if (this.currentChar == '"') {
+                    eof = forward();
+                    return new Token(TokenValues.STRING, getStringValue());
+                }
 
                 if (this.currentChar == '\0') {
                     break;
