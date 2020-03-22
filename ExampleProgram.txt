@@ -5,9 +5,15 @@ c := a - b;
 x := 11;
 var X : int := 4 + (6 * 2);
 print X;
-var nTimes : int := 0;
-print "How many times?"; 
 var Y : string := "Lol" + "Lmao";
 print Y;
 assert (1 = 1);
 var Z : bool := true;
+var nTimes : int := 0;
+print "How many times?";
+read nTimes;
+var x : int;
+for x in 0..nTimes-1 do
+    print x;
+    print " : Hello, World!\n";
+end for;

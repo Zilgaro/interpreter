@@ -21,5 +21,9 @@ namespace Compilers {
         public void addChild(VisitableNode c) {
             this.children.Add(c);
         }
+
+        public void setChildren(List<VisitableNode> children) {
+            this.children = children;
+        }
     }
 }

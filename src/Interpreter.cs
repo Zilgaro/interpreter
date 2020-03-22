@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Compilers {
     class Interpreter : Visitor {
@@ -219,7 +221,40 @@ namespace Compilers {
             globalST[readNode.GetNode().GetValue()] = read;
         }
 
-        public void visit(ForNode forNode) {}
+        public void visit(ForNode forNode) {
+            int from;
+            int to;
+            Type fromType = forNode.getFrom().GetType();
+            
+            if (fromType == typeof(Num)) {
+                from = visit((Num)forNode.getFrom());
+            } else if (fromType == typeof(Var)) {
+                from = (int) visit((Var)forNode.getFrom());
+            } else if (fromType == typeof(BinOp)) {
+                from = (int) visit((BinOp)forNode.getFrom());
+            } else {
+                throw new InterpreterException("Syntax error on For loop condition FROM");
+            }
+
+            Type toType = forNode.getTo().GetType();
+            if (toType == typeof(Num)) {
+                to = visit((Num)forNode.getTo());
+            } else if (toType == typeof(Var)) {
+                to = (int) visit((Var)forNode.getTo());
+            } else if (toType == typeof(BinOp)) {
+                to = (int) visit((BinOp)forNode.getTo());
+            } else {
+                throw new InterpreterException("Syntax error on For loop condition TO");
+            }
+            Root statements = new Root();
+            statements.setChildren(forNode.getStatements());
+            IEnumerable<int> numbers = Enumerable.Range(to,from);
+            foreach (var index in numbers) {
+                // Update value of the 'counter'
+                globalST[forNode.getCounter().GetValue()] = index;
+                visit(statements);
+            } 
+        }
 
         public void interpret() {
             Root root = this.parser.parse();

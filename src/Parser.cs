@@ -168,6 +168,8 @@ namespace Compilers
                     result = AssertionStatement();
                 } else if (this.currentToken.GetTokenValueType() == TokenValues.READ) {
                     result = ReadStatement();
+                } else if (this.currentToken.GetTokenValueType() == TokenValues.FOR) {
+                    result = ForStatement();
                 } else {
                     result = Empty();
                 } 
@@ -202,12 +204,14 @@ namespace Compilers
             Eat(TokenValues.FOR);
             Var v = Variable();
             Eat(TokenValues.IN);
-            VisitableNode n = Expr();
+            VisitableNode from = Expr();
+            Eat(TokenValues.DDOT);
+            VisitableNode to = Expr();
             Eat(TokenValues.DO);
             List<VisitableNode> s = Statements();
             Eat(TokenValues.END);
             Eat(TokenValues.FOR);
-            return new ForNode(v,n,s);
+            return new ForNode(v,from,to,s);
         }
 
         public ReadNode ReadStatement() {
@@ -264,9 +268,9 @@ namespace Compilers
 
         public TypeNode TypeSpec() {
             /*
-            * TypeSpec: INT 
+            * TypeSpec:   INT 
                         | STRING
-                        | BOOL <- not yet
+                        | BOOL
 
             */
             Token token = this.currentToken;
@@ -288,7 +292,7 @@ namespace Compilers
         public Root parse() {
             Root node = Program();
             if (this.currentToken.GetTokenValueType() != TokenValues.EOF) {
-                throw new InterpreterException("EOF expected");
+                throw new InterpreterException("EOF expected, probably missing a semicolon");
             }
             return node;
         }

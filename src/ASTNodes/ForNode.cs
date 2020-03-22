@@ -2,13 +2,14 @@ using System.Collections.Generic;
 namespace Compilers {
     public class ForNode : VisitableNode {
         private Var counter;
-        private VisitableNode precon;
+        private VisitableNode from, to;
         private List<VisitableNode> statements;
         private Token op;
 
-        public ForNode(Var counter, VisitableNode precon, List<VisitableNode> statements) {
+        public ForNode(Var counter, VisitableNode from, VisitableNode to, List<VisitableNode> statements) {
             this.counter = counter;
-            this.precon = precon;
+            this.from = from;
+            this.to = to;
             this.statements = statements;
         }
 
@@ -18,8 +19,8 @@ namespace Compilers {
 
         public Var getCounter() {return this.counter;}
 
-        public VisitableNode getPrecon() {return this.precon;}
-
+        public VisitableNode getFrom() {return this.from;}
+        public VisitableNode getTo() {return this.to;}
         public List<VisitableNode> getStatements() {return this.statements;}
     }
 }

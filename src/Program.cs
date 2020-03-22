@@ -35,7 +35,7 @@ namespace Compilers
         LESSTHAN,
         TRUE,
         FALSE,
-        
+        DDOT,
     }
 
     class Program
@@ -45,7 +45,7 @@ namespace Compilers
             StreamReader file;
             try
             {
-                file = new StreamReader("ExampleProgram2.txt");
+                file = new StreamReader("ExampleProgram.txt");
             } catch (Exception e) {
                 Console.WriteLine(e);
                 return 1;
@@ -60,7 +60,7 @@ namespace Compilers
             interpreter.interpret();
             //}
             // Program state at the end
-            Console.WriteLine("Global symbol table key-value pairs:");
+            Console.WriteLine("Finished, Global symbol table key-value pairs:");
             foreach (var key in globalST.Keys) {
                 Console.WriteLine("Key: " + key + ", Value: " + globalST[key]);
             }

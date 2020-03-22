@@ -220,6 +220,19 @@ namespace Compilers {
                     return new Token(TokenValues.SEMI, ";");
                 }
 
+                if (this.currentChar == '.' && this.lookAhead() == '.') {
+                    eof = forward();
+                    eof = forward();
+                    return new Token(TokenValues.DDOT, "..");
+                }
+
+                /*
+                * ATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTION
+                *
+                * Done with Windows needs to be changed to UNIX line endings: Just \n!!
+                *
+                * ATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTIONATTENTION
+                */
                 if (this.currentChar == '\r' && lookAhead() == '\n') {
                     eof = forward();
                     eof = forward();
