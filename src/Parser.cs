@@ -62,7 +62,7 @@ namespace Compilers
         }
 
         public dynamic Term() {
-            // factor ((MUL|DIV) factor)*
+            //Term: Factor ((MUL|DIV) factor)*
             var result = Factor();
             while (this.currentToken.GetTokenValueType() == TokenValues.DIVISION || this.currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
                 Token token = this.currentToken;
