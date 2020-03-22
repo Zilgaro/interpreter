@@ -180,8 +180,8 @@ namespace Compilers {
             }
             Root statements = new Root();
             statements.setChildren(forNode.getStatements());
-            IEnumerable<int> numbers = Enumerable.Range(to,from);
-            foreach (var index in numbers) {
+            IEnumerable<int> numbers = Enumerable.Range(from,to);
+            foreach (int index in numbers) {
                 // Update value of the 'counter'
                 globalST[forNode.getCounter().GetValue()] = index;
                 visit(statements);
