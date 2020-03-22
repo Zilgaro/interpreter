@@ -10,6 +10,9 @@ namespace Compilers {
         private char currentChar;
         private Dictionary<String, Token> reservedKeywords;
         public Tokenizer(String text) {
+            /*
+            * I added the boolean values true and false to these to support boolean variables
+            */
             this.reservedKeywords = new Dictionary<String, Token>();
             reservedKeywords.Add("var", new Token(TokenValues.VAR, "var"));
             reservedKeywords.Add("int", new Token(TokenValues.INT, "int"));
@@ -22,6 +25,8 @@ namespace Compilers {
             reservedKeywords.Add("do", new Token(TokenValues.DO, "do"));
             reservedKeywords.Add("read", new Token(TokenValues.READ, "read"));
             reservedKeywords.Add("assert", new Token(TokenValues.ASSERT, "assert"));
+            reservedKeywords.Add("true", new Token(TokenValues.TRUE, "true"));
+            reservedKeywords.Add("false", new Token(TokenValues.FALSE, "false"));
             this.text = text;
             this.pos = 0;
             this.currentChar = text[pos];
@@ -183,6 +188,16 @@ namespace Compilers {
                         continue;
                     }
                     
+                }
+
+                if (this.currentChar == '<') {
+                    eof = forward();
+                    return new Token(TokenValues.LESSTHAN, "<");
+                }
+
+                if (this.currentChar == '=') {
+                    eof = forward();
+                    return new Token(TokenValues.EQUAL, "=");
                 }
 
                 if (this.currentChar == '*') {

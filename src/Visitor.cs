@@ -13,5 +13,9 @@ namespace Compilers {
         void visit (Print print);
 
         string visit(Str str);
+
+        bool visit(BoolNode boolNode);
+
+        void visit (Assert assert);
     }
 }

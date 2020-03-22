@@ -53,7 +53,6 @@ namespace Compilers
 
         public dynamic Term() {
             // factor ((MUL|DIV) factor)*
-            //int result = int.Parse(Factor());
             var result = Factor();
             while (this.currentToken.GetTokenValueType() == TokenValues.DIVISION || this.currentToken.GetTokenValueType() == TokenValues.MULTIPLY) {
                 Token token = this.currentToken;
@@ -75,8 +74,10 @@ namespace Compilers
             HashSet<TokenValues> values = new HashSet<TokenValues>();
             values.Add(TokenValues.PLUS);
             values.Add(TokenValues.MINUS);
+            values.Add(TokenValues.EQUAL);
+            values.Add(TokenValues.LESSTHAN);
             /*
-                expr    : Term ((PLUS|MINUS) Term) *
+                expr    : Term ((PLUS|MINUS|EQUAL|LESSTHAN) Term) *
                 Term    : Factor ((MUL|DIV) Factor) * 
                 Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING
             */
@@ -89,6 +90,12 @@ namespace Compilers
                         break;
                     case TokenValues.PLUS:
                         Eat(TokenValues.PLUS);
+                        break;
+                    case TokenValues.EQUAL:
+                        Eat(TokenValues.EQUAL);
+                        break;
+                    case TokenValues.LESSTHAN:
+                        Eat(TokenValues.LESSTHAN);
                         break;
                     default:
                         throw new InterpreterException("syntax error");
@@ -132,6 +139,8 @@ namespace Compilers
                       | VariableDeclaration
                       | Print
                       | Empty
+                      | AssertionStatement
+                      | ReadStatement
             */
             VisitableNode result = null;
 
@@ -143,6 +152,10 @@ namespace Compilers
                 } else if (this.currentToken.GetTokenValueType() == TokenValues.PRINT) {
                     Eat(TokenValues.PRINT);
                     result = Print();
+                } else if (this.currentToken.GetTokenValueType() == TokenValues.ASSERT) {
+                    result = AssertionStatement();
+                } else if (this.currentToken.GetTokenValueType() == TokenValues.READ) {
+                    result = Empty();
                 } else {
                     result = Empty();
                 } 
@@ -157,6 +170,24 @@ namespace Compilers
             VisitableNode n = Expr();
             return new Print(n);
         }
+
+        public Assert AssertionStatement() {
+            /*
+            * AssertionStatement: ASSERT LPAREN expr RPAREN
+            */
+            Eat(TokenValues.ASSERT);
+            Eat(TokenValues.LPAREN);
+            VisitableNode n = Expr();
+            Eat(TokenValues.RPAREN);
+            return new Assert(n);
+
+        }
+
+     //   public ReadNode ReadStatement() {
+     //       /*
+     //       * ReadStatement: READ Variable
+     //       */
+     //   }
 
         public Assign AssignmentStatement() {
             /*

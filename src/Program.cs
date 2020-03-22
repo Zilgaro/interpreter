@@ -31,6 +31,10 @@ namespace Compilers
         ID,
         ROOT,
         COLON, 
+        EQUAL,
+        LESSTHAN,
+        TRUE,
+        FALSE,
         
     }
 
@@ -54,8 +58,8 @@ namespace Compilers
                 Parser parser = new Parser(tokenizer);
                 Interpreter interpreter = new Interpreter(parser, globalST);
                 interpreter.interpret();
-                //String result = interpreter.globalST.ToString();
             }
+            // Program state at the end
             Console.WriteLine("Global symbol table key-value pairs:");
             foreach (var key in globalST.Keys) {
                 Console.WriteLine("Key: " + key + ", Value: " + globalST[key]);

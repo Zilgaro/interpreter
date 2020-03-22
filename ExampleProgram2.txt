@@ -1,2 +1,3 @@
 var Y : string := "Lol" + "Lmao";
-print Y
+print Y;
+assert (1 = 1);

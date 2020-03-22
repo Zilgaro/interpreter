@@ -106,6 +106,10 @@ namespace Compilers {
             return str.getValue();
         }
 
+        public bool visit(BoolNode boolNode) {
+            return bool.Parse(boolNode.getValue());
+        }
+
         public dynamic visit(Var var) {
             String name = var.GetValue();
         
@@ -146,7 +150,6 @@ namespace Compilers {
                     throw new InterpreterException(String.Format("Incompatible types for operation {0}: {1} {2}", binOp.getOp().GetTokenValueType(), leftType, rightType));
                 }
             }
-               
 
             switch (binOp.getOp().GetTokenValueType()) {
                 case TokenValues.PLUS:
@@ -157,6 +160,10 @@ namespace Compilers {
                     return left * right;
                 case TokenValues.DIVISION:
                     return left / right;
+                case TokenValues.EQUAL:
+                    return left == right;
+                case TokenValues.LESSTHAN:
+                    return left < right;
                 default:
                     throw(new InterpreterException("Invalid syntax"));
             }
@@ -183,6 +190,22 @@ namespace Compilers {
                 Console.WriteLine(visit((Var)print.GetNode()));
             } else if (printType == typeof(Str)) {
                 Console.WriteLine(visit((Str)print.GetNode()));
+            }
+        }
+
+        public void visit(Assert assert) {
+            Type assertType = assert.GetNode().GetType();
+
+            if (assertType == typeof(BinOp)) {
+                bool result = visit((BinOp)assert.GetNode());
+                if (result == false) {
+                    throw new InterpreterException("Assertion failed");
+                }
+            } else if (assertType == typeof(BoolNode)) {
+                bool result = visit((BoolNode)assert.GetNode());
+                if (result == false) {
+                    throw new InterpreterException("Assertion failed");
+                }
             }
         }
 
