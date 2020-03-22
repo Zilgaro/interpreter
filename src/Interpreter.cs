@@ -213,7 +213,8 @@ namespace Compilers {
         }
 
         public void visit(ReadNode readNode) {
-
+            int read = Int32.Parse(Console.ReadLine());
+            globalST[readNode.GetNode().GetValue()] = read;
         }
 
         public void interpret() {

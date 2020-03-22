@@ -1,1 +1,3 @@
-var Z : bool := true;
+var nTimes : int := 0;
+print "How many times?";
+read nTimes; 

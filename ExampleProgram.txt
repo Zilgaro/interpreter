@@ -10,3 +10,4 @@ print "How many times?";
 var Y : string := "Lol" + "Lmao";
 print Y;
 assert (1 = 1);
+var Z : bool := true;

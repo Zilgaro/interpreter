@@ -1,14 +1,14 @@
 namespace Compilers {
     public class ReadNode : VisitableNode {
         
-        private VisitableNode node;
-        public ReadNode(VisitableNode n) {
+        private Var node;
+        public ReadNode(Var n) {
             node = n;
         }
 
         public override void accept(Visitor v) => v.visit(this);
 
-        public VisitableNode GetNode() {return this.node;}
+        public Var GetNode() {return this.node;}
 
     }
 }

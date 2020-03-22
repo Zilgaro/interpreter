@@ -31,6 +31,8 @@ namespace Compilers
                      | LPAREN expr RPAREN
                      | Variable
                      | STRING
+                     | TRUE
+                     | FALSE
             *           
             */
             if (currentToken.GetTokenValueType() == TokenValues.LPAREN) {
@@ -87,7 +89,7 @@ namespace Compilers
             /*
                 expr    : Term ((PLUS|MINUS|EQUAL|LESSTHAN) Term) *
                 Term    : Factor ((MUL|DIV) Factor) * 
-                Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING | BOOL
+                Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING | TRUE | FALSE
             */
             while(values.Contains(this.currentToken.GetTokenValueType())) {
                 TokenValues type = this.currentToken.GetTokenValueType();
@@ -163,7 +165,7 @@ namespace Compilers
                 } else if (this.currentToken.GetTokenValueType() == TokenValues.ASSERT) {
                     result = AssertionStatement();
                 } else if (this.currentToken.GetTokenValueType() == TokenValues.READ) {
-                    result = Empty();
+                    result = ReadStatement();
                 } else {
                     result = Empty();
                 } 
@@ -191,11 +193,14 @@ namespace Compilers
 
         }
 
-     //   public ReadNode ReadStatement() {
-     //       /*
-     //       * ReadStatement: READ Variable
-     //       */
-     //   }
+      public ReadNode ReadStatement() {
+           /*
+           * ReadStatement: READ Variable
+           */
+           Eat(TokenValues.READ);
+           Var v = Variable();
+           return new ReadNode(v);
+       }
 
         public Assign AssignmentStatement() {
             /*
