@@ -46,6 +46,14 @@ namespace Compilers
                 Token token = this.currentToken;
                 Eat(TokenValues.STRING);
                 return new Str(token);
+            } else if (this.currentToken.GetTokenValueType() == TokenValues.TRUE) {
+                Token token = this.currentToken;
+                Eat(TokenValues.TRUE);
+                return new BoolNode(token);
+            }else if (this.currentToken.GetTokenValueType() == TokenValues.FALSE) {
+                Token token = this.currentToken;
+                Eat(TokenValues.FALSE);
+                return new BoolNode(token);
             } else {
                 return Variable();
             }
@@ -79,7 +87,7 @@ namespace Compilers
             /*
                 expr    : Term ((PLUS|MINUS|EQUAL|LESSTHAN) Term) *
                 Term    : Factor ((MUL|DIV) Factor) * 
-                Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING
+                Factor  : INTEGER | LPAREN expr RPAREN | Variable | STRING | BOOL
             */
             while(values.Contains(this.currentToken.GetTokenValueType())) {
                 TokenValues type = this.currentToken.GetTokenValueType();
@@ -245,6 +253,8 @@ namespace Compilers
                 Eat(TokenValues.INT);
             } else if (this.currentToken.GetTokenValueType() == TokenValues.STRING) {
                 Eat(TokenValues.STRING);
+            } else if (this.currentToken.GetTokenValueType() == TokenValues.BOOL) {
+                Eat(TokenValues.BOOL);
             }
             return new TypeNode(token);
         }

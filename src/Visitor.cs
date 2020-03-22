@@ -17,5 +17,7 @@ namespace Compilers {
         bool visit(BoolNode boolNode);
 
         void visit (Assert assert);
+
+        void visit(ReadNode readNode);
     }
 }

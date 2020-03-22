@@ -93,6 +93,8 @@ namespace Compilers {
                 this.globalST[name] = this.visit((Var) assign.GetRight());
             } else if (t == typeof(Str)){
                 this.globalST[name] = this.visit((Str) assign.GetRight());
+            } else if (t == typeof(BoolNode)){
+                this.globalST[name] = this.visit((BoolNode) assign.GetRight());
             } else {
                 throw new InterpreterException("Unsupported type assignment");
             }
@@ -120,6 +122,7 @@ namespace Compilers {
             }
         }
 
+        // A hot mess but gets the return value based on types given left and right
         public dynamic visit(BinOp binOp) {
             int left = 0;
             int right = 0;
@@ -207,6 +210,10 @@ namespace Compilers {
                     throw new InterpreterException("Assertion failed");
                 }
             }
+        }
+
+        public void visit(ReadNode readNode) {
+
         }
 
         public void interpret() {
